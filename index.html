@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a, #1e1b4b, #312e81);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 42px;
+      margin: 0;
+    }
+
+    .header span {
+      color: #38bdf8;
+    }
+
+    .header p {
+      color: #cbd5e1;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(14px);
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      margin-bottom: 25px;
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: 1fr 160px 140px;
+      gap: 12px;
+    }
+
+    input, select {
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+
+    .add-btn {
+      background: #38bdf8;
+      color: #0f172a;
+    }
+
+    .add-btn:hover {
+      background: #7dd3fc;
+      transform: scale(1.03);
+    }
+
+    .tasks {
+      display: grid;
+      gap: 14px;
+    }
+
+    .task {
+      background: rgba(15, 23, 42, 0.85);
+      border-left: 6px solid #38bdf8;
+      padding: 18px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .task-info h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .task-info small {
+      color: #cbd5e1;
+    }
+
+    .badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      background: #312e81;
+      color: #bfdbfe;
+      margin-left: 8px;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+      color: white;
+      padding: 10px 14px;
+    }
+
+    .delete-btn:hover {
+      background: #f87171;
+    }
+
+    @media (max-width: 700px) {
+      .form {
+        grid-template-columns: 1fr;
+      }
+
+      .task {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="header">
+      <h1>Task<span>Flow</span> </h1>
+      <p>Administrador de tareas conectado a Cloudflare Workers + D1</p>
+    </div>
+
+    <div class="card">
+      <div class="form">
+        <input id="taskInput" placeholder="Escribe una nueva tarea..." />
+        <input id="dateInput" type="date" />
+        <button class="add-btn" onclick="crearTarea()">Crear tarea</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Mis tareas</h2>
+      <div id="tasks" class="tasks"></div>
+    </div>
+  </div>
+
+  <script>
+    const API = "https://task-manager-cloudflare.carloscalzada169.workers.dev";
+
+    async function cargarTareas() {
+      const res = await fetch(API + "/tasks");
+      const data = await res.json();
+
+      const container = document.getElementById("tasks");
+      container.innerHTML = "";
+
+      data.forEach(task => {
+        const div = document.createElement("div");
+        div.className = "task";
+
+        div.innerHTML = `
+          <div class="task-info">
+            <h3>${task.title}</h3>
+            <small>ID: ${task.id}</small>
+            <span class="badge">Pendiente</span>
+          </div>
+          <button class="delete-btn" onclick="eliminarTarea(${task.id})">Eliminar</button>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    async function crearTarea() {
+      const input = document.getElementById("taskInput");
+
+      if (!input.value.trim()) {
+        alert("Escribe una tarea primero");
+        return;
+      }
+
+      await fetch(API + "/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: input.value })
+      });
+
+      input.value = "";
+      cargarTareas();
+    }
+
+    async function eliminarTarea(id) {
+      alert("El botón está listo, falta agregar DELETE en el backend.");
+    }
+
+    cargarTareas();
+  </script>
+</body>
+</html>

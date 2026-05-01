@@ -1,42 +1,85 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `npm run dev` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `npm run deploy` to publish your worker
- *
- * Bind resources to your worker in `wrangler.jsonc`. After adding bindings, a type definition for the
- * `Env` object can be regenerated with `npm run cf-typegen`.
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
-// test CI
+export interface Env {
+  task_db: D1Database;
+}
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
 
 export default {
-  async fetch(request: Request, env: any): Promise<Response> {
+  async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // GET /tasks
+    // 🔹 CORS preflight
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: corsHeaders,
+      });
+    }
+
+    // 🔹 GET /tasks
     if (request.method === "GET" && url.pathname === "/tasks") {
       const { results } = await env.task_db
-        .prepare("SELECT * FROM tasks")
+        .prepare("SELECT * FROM tasks ORDER BY id DESC")
         .all();
 
-      return Response.json(results);
+      return new Response(JSON.stringify(results), {
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
+      });
     }
 
-    // POST /tasks
+    // 🔹 POST /tasks
     if (request.method === "POST" && url.pathname === "/tasks") {
-      const body = await request.json();
+      const body: any = await request.json();
 
       await env.task_db
-        .prepare("INSERT INTO tasks (title) VALUES (?)")
-        .bind(body.title)
+        .prepare("INSERT INTO tasks (title, due_date) VALUES (?, ?)")
+        .bind(body.title, body.due_date || null)
         .run();
 
-      return Response.json({ message: "Task creada" });
+      return new Response(
+        JSON.stringify({ message: "Task creada" }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
     }
 
-    return new Response("Not Found", { status: 404 });
-  }
+    // 🔹 DELETE /tasks/:id
+    if (
+      request.method === "DELETE" &&
+      url.pathname.startsWith("/tasks/")
+    ) {
+      const id = url.pathname.split("/")[2];
+
+      await env.task_db
+        .prepare("DELETE FROM tasks WHERE id = ?")
+        .bind(id)
+        .run();
+
+      return new Response(
+        JSON.stringify({ message: "Task eliminada" }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            ...corsHeaders,
+          },
+        }
+      );
+    }
+
+    // 🔹 fallback
+    return new Response("Not Found", {
+      status: 404,
+      headers: corsHeaders,
+    });
+  },
 };
