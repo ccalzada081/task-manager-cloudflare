@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TaskFlow</title>
 
   <style>
@@ -59,7 +59,7 @@
       gap: 12px;
     }
 
-    input, select {
+    input {
       padding: 14px;
       border-radius: 12px;
       border: none;
@@ -166,7 +166,7 @@
   </div>
 
   <script>
-    const API = "https://task-manager-cloudflare.carloscalzada169.workers.dev";
+    const API = "";
 
     async function cargarTareas() {
       const res = await fetch(API + "/tasks");
@@ -182,7 +182,7 @@
         div.innerHTML = `
           <div class="task-info">
             <h3>${task.title}</h3>
-            <small>ID: ${task.id}</small>
+            <small>ID: ${task.id} | Fecha: ${task.due_date || "Sin fecha"}</small>
             <span class="badge">Pendiente</span>
           </div>
           <button class="delete-btn" onclick="eliminarTarea(${task.id})">Eliminar</button>
@@ -194,6 +194,7 @@
 
     async function crearTarea() {
       const input = document.getElementById("taskInput");
+      const date = document.getElementById("dateInput");
 
       if (!input.value.trim()) {
         alert("Escribe una tarea primero");
@@ -202,16 +203,27 @@
 
       await fetch(API + "/tasks", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: input.value })
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title: input.value,
+          due_date: date.value
+        })
       });
 
       input.value = "";
+      date.value = "";
+
       cargarTareas();
     }
 
     async function eliminarTarea(id) {
-      alert("El botón está listo, falta agregar DELETE en el backend.");
+      await fetch(API + "/tasks/" + id, {
+        method: "DELETE"
+      });
+
+      cargarTareas();
     }
 
     cargarTareas();
