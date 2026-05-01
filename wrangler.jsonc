@@ -13,6 +13,14 @@
 	"upload_source_maps": true,
 	"compatibility_flags": [
 		"nodejs_compat"
+	],
+	"d1_databases": [
+		{
+			"binding": "task_db",
+			"database_name": "task-db",
+			"database_id": "fe3387bd-f92e-4aa2-be93-24bd208f6a6b",
+			"remote": true
+		}
 	]
 	/**
 	 * Smart Placement
