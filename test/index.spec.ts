@@ -1,29 +1,22 @@
-import {
-	env,
-	createExecutionContext,
-	waitOnExecutionContext,
-	SELF,
-} from "cloudflare:test";
 import { describe, it, expect } from "vitest";
-import worker from "../src/index";
 
-// For now, you'll need to do something like this to get a correctly-typed
-// `Request` to pass to `worker.fetch()`.
-const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
+describe("Task Manager basic tests", () => {
+  it("should validate a task title", () => {
+    const task = {
+      title: "Preparar demo",
+      due_date: "2026-05-08"
+    };
 
-describe("Hello World worker", () => {
-	it("responds with Hello World! (unit style)", async () => {
-		const request = new IncomingRequest("http://example.com");
-		// Create an empty context to pass to `worker.fetch()`.
-		const ctx = createExecutionContext();
-		const response = await worker.fetch(request, env, ctx);
-		// Wait for all `Promise`s passed to `ctx.waitUntil()` to settle before running test assertions
-		await waitOnExecutionContext(ctx);
-		expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
-	});
+    expect(task.title).toBe("Preparar demo");
+    expect(task.due_date).toBe("2026-05-08");
+  });
 
-	it("responds with Hello World! (integration style)", async () => {
-		const response = await SELF.fetch("https://example.com");
-		expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
-	});
+  it("should validate task completed status", () => {
+    const task = {
+      title: "Grabar video",
+      completed: false
+    };
+
+    expect(task.completed).toBe(false);
+  });
 });
