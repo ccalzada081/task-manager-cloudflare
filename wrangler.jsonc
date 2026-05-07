@@ -1,25 +1,30 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "task-manager-cloudflare",
-	"main": "src/index.ts",
-	"compatibility_date": "2026-05-01",
-	"observability": {
-		"enabled": true
-	},
-	"upload_source_maps": true,
-	"compatibility_flags": [
-		"nodejs_compat"
-	],
-	"assets": {
-		"directory": "./public",
-		"binding": "ASSETS"
-	},
-	"d1_databases": [
-		{
-			"binding": "task_db",
-			"database_name": "task-db",
-			"database_id": "fe3387bd-f92e-4aa2-be93-24bd208f6a6b",
-			"remote": true
-		}
-	]
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "task-manager-cloudflare",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-05-01",
+
+  "observability": {
+    "enabled": true
+  },
+
+  "upload_source_maps": true,
+
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+
+  "d1_databases": [
+    {
+      "binding": "task_db",
+      "database_name": "task-db",
+      "database_id": "fe3387bd-f92e-4aa2-be93-24bd208f6a6b",
+      "remote": true
+    }
+  ]
 }
