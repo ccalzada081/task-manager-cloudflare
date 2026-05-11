@@ -21,16 +21,13 @@ El proyecto implementa:
 - TypeScript
 - Vitest
 - Sentry
-- HTML/CSS/JavaScript
 
 ---
 
-# Arquitectura del proyecto
+# Arquitectura
 
 ## Frontend
-- HTML
-- CSS
-- JavaScript
+- HTML/CSS/JavaScript
 
 ## Backend
 - Cloudflare Workers
@@ -38,28 +35,92 @@ El proyecto implementa:
 ## Base de datos
 - Cloudflare D1
 
-## Infraestructura
-- Terraform
-
 ## Monitoreo
 - Sentry
 
 ---
 
-# Infraestructura como código (Terraform)
+# Infraestructura con Terraform
 
-La infraestructura del proyecto se administra utilizando Terraform.
+La infraestructura se administra mediante Terraform.
 
-Recursos administrados:
+Recursos configurados:
 
 - Cloudflare Worker
-- Cloudflare D1 Database
+- Base de datos D1
 - Variables de entorno
 - Configuración de despliegue
 
-## Comandos principales
+---
 
-Inicializar Terraform:
+# Pipeline CI/CD
+
+El proyecto utiliza GitHub Actions para automatizar:
+
+- Instalación de dependencias
+- Ejecución de pruebas unitarias
+- Validación del proyecto
+- Despliegue automático
+- Flujo de aprobación entre ambientes
+
+---
+
+# Pruebas unitarias
+
+Las pruebas unitarias fueron implementadas utilizando Vitest.
+
+## Comando de ejecución
 
 ```bash
-terraform init
+npm run coverage
+```
+
+## Resultado esperado
+
+```text
+Test Files  1 passed
+Tests       2 passed
+```
+
+Las pruebas también se ejecutan automáticamente dentro del pipeline de GitHub Actions.
+
+---
+
+# Monitoreo y observabilidad
+
+El proyecto integra Sentry como herramienta APM para monitoreo en tiempo real.
+
+## Funcionalidades implementadas
+
+- Captura automática de errores
+- Dashboard de monitoreo
+- Registro de excepciones
+- Métricas en tiempo real
+
+## Endpoint de prueba
+
+```text
+/error
+```
+
+---
+
+# Ejecución local
+
+## Instalar dependencias
+
+```bash
+npm install
+```
+
+## Ejecutar localmente
+
+```bash
+npm run dev
+```
+
+---
+
+# URL del proyecto
+
+https://task-manager-cloudflare.carloscalzada169.workers.dev
